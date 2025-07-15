@@ -18,6 +18,7 @@
 
 namespace FluentValidation.Validators;
 
+using System;
 using Internal;
 
 public abstract class PropertyValidator<T, TProperty> : IPropertyValidator<T,TProperty> {
@@ -55,4 +56,16 @@ public abstract class PropertyValidator<T, TProperty> : IPropertyValidator<T,TPr
 	/// <param name="value">The current property value to validate</param>
 	/// <returns>True if valid, otherwise false.</returns>
 	public abstract bool IsValid(ValidationContext<T> context, TProperty value);
+
+	bool ISyncPropertyValidator.IsValid(IValidationContext context, object value) {
+		if (context is not ValidationContext<T> validationContext) {
+			throw new ArgumentException("The context must be of type ValidationContext<T>.", nameof(context));
+		}
+
+		if (value is not TProperty propertyValue) {
+			throw new ArgumentException($"The value must be of type {typeof(TProperty).Name}.", nameof(value));
+		}
+
+		return IsValid(validationContext, propertyValue);
+	}
 }

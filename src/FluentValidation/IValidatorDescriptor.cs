@@ -52,4 +52,9 @@ public interface IValidatorDescriptor {
 	/// Gets rules for a property.
 	/// </summary>
 	IEnumerable<IValidationRule> GetRulesForMember(string name);
+
+	/// <summary>
+	/// Creates a new validation context for the specified instance.
+	/// </summary>
+	IValidationContext CreateContext(object instance);
 }

@@ -90,6 +90,18 @@ public class ValidatorDescriptor<T> : IValidatorDescriptor {
 		return query.ToList();
 	}
 
+	public IValidationContext CreateContext(object instance) {
+		if (instance is not T castedInstance) {
+			throw new ArgumentException($"Cannot create validation context for an instance of type '{instance.GetType().Name}'. Expected type '{typeof(T).Name}'.", nameof(instance));
+		}
+
+		if (instance is null) {
+			throw new ArgumentNullException(nameof(instance), "Cannot create validation context for a null instance.");
+		}
+
+		return new ValidationContext<T>(castedInstance);
+	}
+
 	/// <summary>
 	/// Gets the member name from an expression
 	/// </summary>

@@ -68,7 +68,7 @@ public static class DefaultValidatorOptions {
 	/// <param name="ruleBuilder">The rule builder.</param>
 	/// <returns>A configurable IValidationRule instance.</returns>
 	public static IValidationRule<T, TProperty> Configurable<T, TProperty>(IRuleBuilder<T, TProperty> ruleBuilder)
-		=> ((IRuleBuilderInternal<T, TProperty>) ruleBuilder).Rule;
+		=> ruleBuilder.Rule;
 
 	/// <summary>
 	/// Gets the configurable rule instance from a rule builder.
@@ -76,7 +76,7 @@ public static class DefaultValidatorOptions {
 	/// <param name="ruleBuilder">The rule builder.</param>
 	/// <returns>A configurable IValidationRule instance.</returns>
 	public static ICollectionRule<T, TCollectionElement> Configurable<T, TCollectionElement>(IRuleBuilderInitialCollection<T, TCollectionElement> ruleBuilder)
-		=> (ICollectionRule<T, TCollectionElement>) ((IRuleBuilderInternal<T, TCollectionElement>) ruleBuilder).Rule;
+		=> (ICollectionRule<T, TCollectionElement>) ruleBuilder.Rule;
 
 	/// <summary>
 	/// <para>

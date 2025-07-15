@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Internal;
+using Results;
 using Validators;
 
 /// <summary>
@@ -246,7 +247,7 @@ public static partial class DefaultValidatorExtensions {
 	/// <returns></returns>
 	public static IRuleBuilderOptions<T, string> Matches<T>(this IRuleBuilder<T, string> ruleBuilder, Func<T, string> expression, RegexOptions options)
 		=> ruleBuilder.SetValidator(new RegularExpressionValidator<T>(expression, options));
-	
+
 	/// <summary>
 	/// Defines a length validator on the current rule builder, but only for string properties.
 	/// Validation will fail if the length of the string is larger than the length specified.
@@ -1203,7 +1204,7 @@ public static partial class DefaultValidatorExtensions {
 	public static IRuleBuilderOptions<T, TProperty> ChildRules<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder, Action<InlineValidator<TProperty>> action) {
 		if (action == null) throw new ArgumentNullException(nameof(action));
 		var validator = new ChildRulesContainer<TProperty>();
-		var parentValidator = ((IRuleBuilderInternal<T>) ruleBuilder).ParentValidator;
+		var parentValidator = ruleBuilder.ParentValidator;
 
 		string[] ruleSets;
 

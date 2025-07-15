@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Defines a rule associated with a property.
 /// </summary>
-internal partial class PropertyRule<T, TProperty> : RuleBase<T, TProperty, TProperty>, IValidationRuleInternal<T, TProperty> {
+internal partial class PropertyRule<T, TProperty> : RuleBase<T, TProperty, TProperty> {
 
 	public PropertyRule(MemberInfo member, Func<T, TProperty> propertyFunc, LambdaExpression expression, Func<CascadeMode> cascadeModeThunk, Type typeToValidate)
 		: base(member, propertyFunc, expression, cascadeModeThunk, typeToValidate) {
@@ -49,7 +49,7 @@ internal partial class PropertyRule<T, TProperty> : RuleBase<T, TProperty, TProp
 	/// <param name="context">Validation Context</param>
 	/// <param name="cancellation"></param>
 	[Zomp.SyncMethodGenerator.CreateSyncVersion(OmitNullableDirective = true)]
-	public virtual async ValueTask ValidateAsync(ValidationContext<T> context, CancellationToken cancellation) {
+	public override async ValueTask ValidateAsync(ValidationContext<T> context, CancellationToken cancellation) {
 		string displayName = GetDisplayName(context);
 
 		if (PropertyName == null && displayName == null) {
@@ -142,7 +142,7 @@ internal partial class PropertyRule<T, TProperty> : RuleBase<T, TProperty, TProp
 		}
 	}
 
-	void IValidationRuleInternal<T>.AddDependentRules(IEnumerable<IValidationRuleInternal<T>> rules) {
+	public override void AddDependentRules(IEnumerable<IValidationRule<T>> rules) {
 		if (DependentRules == null) DependentRules = new();
 		DependentRules.AddRange(rules);
 	}

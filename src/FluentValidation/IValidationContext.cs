@@ -69,6 +69,11 @@ public interface IValidationContext {
 	/// The default is false.
 	/// </summary>
 	bool ThrowOnFailures { get; }
+
+	/// <summary>
+	/// Gets the message formatter used to construct error messages.
+	/// </summary>
+	MessageFormatter MessageFormatter { get; }
 }
 
 internal interface IHasFailures {

@@ -64,8 +64,8 @@ public static class ValidationTestExtension {
 		var member = expression.IsParameterExpression() ? null : expressionMemberName;
 
 		var rules = descriptor.GetRulesForMember(member)
-			.OfType<IValidationRuleInternal<T>>()
-			.SelectMany(x => x.DependentRules ?? Enumerable.Empty<IValidationRuleInternal<T>>())
+			.OfType<IValidationRule<T>>()
+			.SelectMany(x => x.DependentRules ?? Enumerable.Empty<IValidationRule<T>>())
 			.SelectMany(x => x.Components)
 			.Select(x => x.Validator);
 

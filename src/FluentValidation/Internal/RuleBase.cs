@@ -196,7 +196,7 @@ internal abstract class RuleBase<T, TProperty, TValue> : IValidationRule<T, TVal
 	/// <summary>
 	/// Dependent rules
 	/// </summary>
-	internal List<IValidationRuleInternal<T>> DependentRules { get; private protected set; }
+	internal List<IValidationRule<T>> DependentRules { get; private protected set; }
 
 	IEnumerable<IValidationRule> IValidationRule.DependentRules => DependentRules;
 
@@ -286,6 +286,12 @@ internal abstract class RuleBase<T, TProperty, TValue> : IValidationRule<T, TVal
 		value = propertyValue;
 		return true;
 	}
+
+	public abstract ValueTask ValidateAsync(ValidationContext<T> context, CancellationToken cancellation);
+
+	public abstract void Validate(ValidationContext<T> context);
+
+	public abstract void AddDependentRules(IEnumerable<IValidationRule<T>> rules);
 
 	/// <summary>
 	/// Prepares the <see cref="MessageFormatter"/> of <paramref name="context"/> for an upcoming <see cref="ValidationFailure"/>.

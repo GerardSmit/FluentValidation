@@ -111,6 +111,12 @@ public interface IValidationRule<T> : IValidationRule {
 	/// true if the property value was successfully retrieved and is of type <typeparamref name="TProp"/>; otherwise, false.
 	/// </returns>
 	bool TryGetPropertyValue<TProp>(T instance, out TProp value);
+
+	ValueTask ValidateAsync(ValidationContext<T> context, CancellationToken cancellation);
+
+	void Validate(ValidationContext<T> context);
+
+	void AddDependentRules(IEnumerable<IValidationRule<T>> rules);
 }
 
 /// <summary>
@@ -121,6 +127,7 @@ public interface IValidationRule {
 	/// The components in this rule.
 	/// </summary>
 	IEnumerable<IRuleComponent> Components { get; }
+
 	/// <summary>
 	/// Name of the rule-set to which this rule belongs.
 	/// </summary>

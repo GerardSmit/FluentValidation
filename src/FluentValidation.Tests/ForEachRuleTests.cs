@@ -154,6 +154,10 @@ public class ForEachRuleTests {
 
 		public string Name => _inner.Name;
 		public string GetDefaultMessageTemplate(string errorCode) => _inner.GetDefaultMessageTemplate(errorCode);
+
+		public Task<bool> IsValidAsync(IValidationContext context, object value, CancellationToken cancellation) {
+			return Task.FromResult(_inner.IsValid(context, value));
+		}
 	}
 
 	[Fact]

@@ -48,6 +48,12 @@ public partial class RuleComponent<T, TProperty> : IRuleComponent<T, TProperty> 
 	}
 
 	/// <inheritdoc />
+	public Type BaseType => typeof(T);
+
+	/// <inheritdoc />
+	public Type PropertyType => typeof(TProperty);
+
+	/// <inheritdoc />
 	public bool HasCondition => _condition != null;
 
 	/// <inheritdoc />
@@ -122,7 +128,7 @@ public partial class RuleComponent<T, TProperty> : IRuleComponent<T, TProperty> 
 		}
 	}
 
-	internal bool InvokeCondition(ValidationContext<T> context) {
+	public bool InvokeCondition(ValidationContext<T> context) {
 		if (_condition != null) {
 			return _condition(context);
 		}
@@ -130,7 +136,7 @@ public partial class RuleComponent<T, TProperty> : IRuleComponent<T, TProperty> 
 		return true;
 	}
 
-	internal async Task<bool> InvokeAsyncCondition(ValidationContext<T> context, CancellationToken token) {
+	public async Task<bool> InvokeAsyncCondition(ValidationContext<T> context, CancellationToken token = default) {
 		if (_asyncCondition != null) {
 			return await _asyncCondition(context, token);
 		}

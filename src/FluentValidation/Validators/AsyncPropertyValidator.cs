@@ -51,4 +51,16 @@ public abstract class AsyncPropertyValidator<T, TProperty> : IAsyncPropertyValid
 	protected string Localized(string errorCode, string fallbackKey) {
 		return ValidatorOptions.Global.LanguageManager.ResolveErrorMessageUsingErrorCode(errorCode, fallbackKey);
 	}
+
+	Task<bool> IAsyncPropertyValidator.IsValidAsync(IValidationContext context, object value, CancellationToken cancellation) {
+		if (context is not ValidationContext<T> typedContext) {
+			throw new ValidationException($"The validation context must be of type {typeof(ValidationContext<T>).FullName} to use this validator.");
+		}
+
+		if (value is not TProperty typedValue) {
+			throw new ValidationException($"The value must be of type {typeof(TProperty).FullName} to use this validator.");
+		}
+
+		return IsValidAsync(typedContext, typedValue, cancellation);
+	}
 }

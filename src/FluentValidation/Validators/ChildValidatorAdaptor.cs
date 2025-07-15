@@ -123,4 +123,16 @@ public class ChildValidatorAdaptor<T,TProperty> : NoopPropertyValidator<T,TPrope
 			}
 		}
 	}
+
+	public Task<bool> IsValidAsync(IValidationContext context, object value, CancellationToken cancellation) {
+		if (context is not ValidationContext<T> validationContext) {
+			throw new ArgumentException("The context must be of type ValidationContext<T>.", nameof(context));
+		}
+
+		if (value is not TProperty propertyValue) {
+			throw new ArgumentException($"The value must be of type {typeof(TProperty).Name}.", nameof(value));
+		}
+
+		return IsValidAsync(validationContext, propertyValue, cancellation);
+	}
 }

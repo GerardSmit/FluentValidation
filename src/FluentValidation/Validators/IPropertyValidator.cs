@@ -21,7 +21,28 @@ namespace FluentValidation.Validators;
 using System.Threading;
 using System.Threading.Tasks;
 
-public interface IAsyncPropertyValidator<T, in TProperty> : IPropertyValidator {
+public interface IAsyncPropertyValidator {
+	/// <summary>
+	/// Validates a specific property value asynchronously.
+	/// </summary>
+	/// <param name="context">The validation context. The parent object can be obtained from here.</param>
+	/// <param name="value">The current property value to validate</param>
+	/// <param name="cancellation">Cancellation token</param>
+	/// <returns>True if valid, otherwise false.</returns>
+	Task<bool> IsValidAsync(IValidationContext context, object value, CancellationToken cancellation);
+}
+
+public interface ISyncPropertyValidator {
+	/// <summary>
+	/// Validates a specific property value.
+	/// </summary>
+	/// <param name="context">The validation context. The parent object can be obtained from here.</param>
+	/// <param name="value">The current property value to validate</param>
+	/// <returns>True if valid, otherwise false.</returns>
+	bool IsValid(IValidationContext context, object value);
+}
+
+public interface IAsyncPropertyValidator<T, in TProperty> : IPropertyValidator, IAsyncPropertyValidator {
 	/// <summary>
 	/// Validates a specific property value asynchronously.
 	/// </summary>
@@ -32,7 +53,7 @@ public interface IAsyncPropertyValidator<T, in TProperty> : IPropertyValidator {
 	Task<bool> IsValidAsync(ValidationContext<T> context, TProperty value, CancellationToken cancellation);
 }
 
-public interface IPropertyValidator<T, in TProperty> : IPropertyValidator {
+public interface IPropertyValidator<T, in TProperty> : IPropertyValidator, ISyncPropertyValidator {
 	/// <summary>
 	/// Validates a specific property value.
 	/// </summary>
@@ -53,7 +74,6 @@ public interface IPropertyValidator {
 	/// This is used as the default Error Code for the validator.
 	/// </summary>
 	string Name { get; }
-
 
 	/// <summary>
 	/// Returns the default error message template for this validator, when not overridden.

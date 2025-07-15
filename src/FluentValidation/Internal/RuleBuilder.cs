@@ -27,14 +27,12 @@ using Validators;
 /// </summary>
 /// <typeparam name="T">Type of object being validated</typeparam>
 /// <typeparam name="TProperty">Type of property being validated</typeparam>
-internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IRuleBuilderInitial<T, TProperty>, IRuleBuilderInitialCollection<T,TProperty>, IRuleBuilderOptionsConditions<T, TProperty>, IRuleBuilderInternal<T,TProperty> {
+internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IRuleBuilderInitial<T, TProperty>, IRuleBuilderInitialCollection<T,TProperty>, IRuleBuilderOptionsConditions<T, TProperty> {
 
 	/// <summary>
 	/// The rule being created by this RuleBuilder.
 	/// </summary>
-	public IValidationRuleInternal<T, TProperty> Rule { get; }
-
-	IValidationRule<T, TProperty> IRuleBuilderInternal<T,TProperty>.Rule => Rule;
+	public IValidationRule<T, TProperty> Rule { get; }
 
 	/// <summary>
 	/// Parent validator
@@ -44,7 +42,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 	/// <summary>
 	/// Creates a new instance of the <see cref="RuleBuilder{T,TProperty}">RuleBuilder</see> class.
 	/// </summary>
-	public RuleBuilder(IValidationRuleInternal<T, TProperty> rule, AbstractValidator<T> parent) {
+	public RuleBuilder(IValidationRule<T, TProperty> rule, AbstractValidator<T> parent) {
 		Rule = rule;
 		ParentValidator = parent;
 	}
@@ -104,7 +102,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 	}
 
 	private void DependentRulesInternal(Action action) {
-		var dependencyContainer = new List<IValidationRuleInternal<T>>();
+		var dependencyContainer = new List<IValidationRule<T>>();
 		// Capture any rules added to the parent validator inside this delegate.
 		using (ParentValidator.Rules.Capture(dependencyContainer.Add)) {
 			action();
@@ -122,7 +120,11 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 	}
 
 	public void AddComponent(RuleComponent<T,TProperty> component) {
-		Rule.Components.Add(component);
+		if (Rule.Components is not ICollection<RuleComponent<T,TProperty>> collection) {
+			throw new InvalidOperationException("Cannot add a component to a rule that does not support components.");
+		}
+
+		collection.Add(component);
 	}
 
 }

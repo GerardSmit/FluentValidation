@@ -34,7 +34,11 @@ public interface IRuleBuilderInitial<T, out TProperty> : IRuleBuilder<T, TProper
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TProperty"></typeparam>
-public interface IRuleBuilder<T, out TProperty> {
+public interface IRuleBuilder<T, out TProperty> : IRuleBuilder<T> {
+	/// <summary>
+	/// Gets the validation rule that this builder is constructing.
+	/// </summary>
+	IValidationRule<T, TProperty> Rule { get; }
 
 	/// <summary>
 	/// Associates a validator with this the property for this rule builder.
@@ -118,10 +122,6 @@ public interface IConditionBuilder {
 	void Otherwise(Action action);
 }
 
-internal interface IRuleBuilderInternal<T, out TProperty> : IRuleBuilderInternal<T> {
-	IValidationRule<T, TProperty> Rule { get; }
-}
-
-internal interface IRuleBuilderInternal<T> {
+public interface IRuleBuilder<T> {
 	AbstractValidator<T> ParentValidator { get; }
 }

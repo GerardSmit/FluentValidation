@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 /// </summary>
 /// <typeparam name="TElement"></typeparam>
 /// <typeparam name="T"></typeparam>
-internal partial class CollectionPropertyRule<T, TElement> : RuleBase<T, IEnumerable<TElement>, TElement>, ICollectionRule<T, TElement>, IValidationRuleInternal<T, TElement> {
+internal partial class CollectionPropertyRule<T, TElement> : RuleBase<T, IEnumerable<TElement>, TElement>, ICollectionRule<T, TElement> {
 	/// <summary>
 	/// Initializes new instance of the CollectionPropertyRule class
 	/// </summary>
@@ -68,7 +68,7 @@ internal partial class CollectionPropertyRule<T, TElement> : RuleBase<T, IEnumer
 
 
 	[Zomp.SyncMethodGenerator.CreateSyncVersion(OmitNullableDirective = true)]
-	async ValueTask IValidationRuleInternal<T>.ValidateAsync(ValidationContext<T> context, CancellationToken cancellation) {
+	public override async ValueTask ValidateAsync(ValidationContext<T> context, CancellationToken cancellation) {
 		string displayName = GetDisplayName(context);
 
 		if (PropertyName == null && displayName == null) {
@@ -198,7 +198,7 @@ internal partial class CollectionPropertyRule<T, TElement> : RuleBase<T, IEnumer
 		}
 	}
 
-	void IValidationRuleInternal<T>.AddDependentRules(IEnumerable<IValidationRuleInternal<T>> rules) {
+	public override void AddDependentRules(IEnumerable<IValidationRule<T>> rules) {
 		if (DependentRules == null) DependentRules = new();
 		DependentRules.AddRange(rules);
 	}

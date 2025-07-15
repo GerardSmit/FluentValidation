@@ -67,12 +67,37 @@ public interface IRuleComponent<T, out TProperty> : IRuleComponent {
 	/// </summary>
 	/// <param name="errorMessage">The error message to set</param>
 	void SetErrorMessage(string errorMessage);
+
+	/// <summary>
+	/// Invokes the condition for this validator.
+	/// </summary>
+	/// <param name="context">The validation context.</param>
+	/// <returns>True if the condition is met, false otherwise.</returns>
+	bool InvokeCondition(ValidationContext<T> context);
+
+	/// <summary>
+	/// Invokes the condition for this validator.
+	/// </summary>
+	/// <param name="context">The validation context.</param>
+	/// <param name="token">A cancellation token.</param>
+	/// <returns>True if the condition is met, false otherwise.</returns>
+	Task<bool> InvokeAsyncCondition(ValidationContext<T> context, CancellationToken token = default);
 }
 
 /// <summary>
 /// An individual component within a rule with a validator attached.
 /// </summary>
 public interface IRuleComponent {
+	/// <summary>
+	/// Gets the base type of the component.
+	/// </summary>
+	Type BaseType { get; }
+
+	/// <summary>
+	/// Gets the property type of the component.
+	/// </summary>
+	Type PropertyType { get; }
+
 	/// <summary>
 	/// Whether or not this validator has a condition associated with it.
 	/// </summary>
