@@ -1,6 +1,7 @@
 namespace FluentValidation.Validators;
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Internal;
@@ -13,15 +14,23 @@ public interface IChildValidatorAdaptor {
 	/// The type of the underlying validator
 	/// </summary>
 	Type ValidatorType { get; }
+
+	IValidator GetValidator(IValidationContext context, object value);
 }
 
-public class ChildValidatorAdaptor<T,TProperty> : NoopPropertyValidator<T,TProperty>, IAsyncPropertyValidator<T, TProperty>, IChildValidatorAdaptor {
+public interface IChildValidatorAdaptor<T, in TProperty> : IChildValidatorAdaptor {
+	IValidator GetValidator(ValidationContext<T> context, TProperty value);
+}
+
+public class ChildValidatorAdaptor<T,TProperty> : NoopPropertyValidator<T,TProperty>, IAsyncPropertyValidator<T, TProperty>, IChildValidatorAdaptor<T, TProperty> {
 	private readonly Func<ValidationContext<T>, TProperty, IValidator<TProperty>> _validatorProvider;
 	private readonly IValidator<TProperty> _validator;
 
 	public override string Name => "ChildValidatorAdaptor";
 
 	public Type ValidatorType { get; }
+
+	public object Validator => _validator;
 
 	public string[] RuleSets { get; set; }
 
@@ -88,6 +97,18 @@ public class ChildValidatorAdaptor<T,TProperty> : NoopPropertyValidator<T,TPrope
 	public virtual IValidator GetValidator(ValidationContext<T> context, TProperty value) {
 		ArgumentNullException.ThrowIfNull(context);
 		return _validatorProvider != null ? _validatorProvider(context, value) : _validator;
+	}
+
+	public IValidator GetValidator(IValidationContext context, object value) {
+		if (context is not ValidationContext<T> validationContext) {
+			throw new ArgumentException("The context must be of type ValidationContext<T>.", nameof(context));
+		}
+
+		if (value is not TProperty propertyValue) {
+			throw new ArgumentException($"The value must be of type {typeof(TProperty).Name}.", nameof(value));
+		}
+
+		return GetValidator(validationContext, propertyValue);
 	}
 
 	protected virtual IValidationContext CreateNewValidationContextForChildValidator(ValidationContext<T> context, TProperty value) {

@@ -1,5 +1,6 @@
 ﻿namespace FluentValidation.Internal;
 
+using System;
 using Validators;
 
 public interface IMessageBuilderContext<T, out TProperty> {
@@ -18,13 +19,13 @@ public class MessageBuilderContext<T,TProperty> : IMessageBuilderContext<T,TProp
 	private ValidationContext<T> _innerContext;
 	private TProperty _value;
 
-	public MessageBuilderContext(ValidationContext<T> innerContext, TProperty value, RuleComponent<T,TProperty> component) {
+	public MessageBuilderContext(ValidationContext<T> innerContext, TProperty value, IRuleComponent<T,TProperty> component) {
 		_innerContext = innerContext;
 		_value = value;
 		Component = component;
 	}
 
-	public RuleComponent<T,TProperty> Component { get; }
+	public IRuleComponent<T,TProperty> Component { get; }
 
 	IRuleComponent<T, TProperty> IMessageBuilderContext<T, TProperty>.Component => Component;
 
@@ -45,6 +46,10 @@ public class MessageBuilderContext<T,TProperty> : IMessageBuilderContext<T,TProp
 	public TProperty PropertyValue => _value;
 
 	public string GetDefaultMessage() {
-		return Component.GetErrorMessage(_innerContext, _value);
+		if (Component is IRuleComponentInternal<T, TProperty> errorMessageProvider) {
+			return errorMessageProvider.GetErrorMessage(_innerContext, _value);
+		}
+
+		throw new InvalidOperationException("The rule component does not support default error message retrieval. Ensure that the component implements IRuleComponentInternal<T, TProperty>.");
 	}
 }

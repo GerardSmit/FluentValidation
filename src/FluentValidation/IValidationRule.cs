@@ -29,17 +29,6 @@ using Validators;
 
 public interface IValidationRule<T, out TProperty> : IValidationRule<T> {
 	/// <summary>
-	/// Cascade mode for this rule.
-	/// </summary>
-	public CascadeMode CascadeMode { get; set; }
-
-	/// <summary>
-	/// Sets the display name for the property using a function.
-	/// </summary>
-	/// <param name="factory">The function for building the display name</param>
-	void SetDisplayName(Func<ValidationContext<T>, string> factory);
-
-	/// <summary>
 	/// Adds a validator to this rule.
 	/// </summary>
 	void AddValidator(IPropertyValidator<T, TProperty> validator);
@@ -63,6 +52,12 @@ public interface IValidationRule<T, out TProperty> : IValidationRule<T> {
 }
 
 public interface IValidationRule<T> : IValidationRule {
+
+	/// <summary>
+	/// Sets the display name for the property using a function.
+	/// </summary>
+	/// <param name="factory">The function for building the display name</param>
+	void SetDisplayName(Func<ValidationContext<T>, string> factory);
 
 	/// <summary>
 	/// Applies a condition to a single rule chain.
@@ -123,6 +118,11 @@ public interface IValidationRule<T> : IValidationRule {
 /// Defines a rule associated with a property which can have multiple validators.
 /// </summary>
 public interface IValidationRule {
+	/// <summary>
+	/// Cascade mode for this rule.
+	/// </summary>
+	public CascadeMode CascadeMode { get; set; }
+
 	/// <summary>
 	/// The components in this rule.
 	/// </summary>

@@ -49,7 +49,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 
 	public IRuleBuilderOptions<T, TProperty> SetValidator(IPropertyValidator<T, TProperty> validator) {
 		if (validator == null) throw new ArgumentNullException(nameof(validator));
-		Rule.AddValidator(validator);
+		AddValidator(validator);
 		return this;
 	}
 
@@ -57,7 +57,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 		if (validator == null) throw new ArgumentNullException(nameof(validator));
 		// See if the async validator supports synchronous execution too.
 		IPropertyValidator<T, TProperty> fallback = validator as IPropertyValidator<T, TProperty>;
-		Rule.AddAsyncValidator(validator, fallback);
+		AddAsyncValidator(validator, fallback);
 		return this;
 	}
 
@@ -67,7 +67,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 			RuleSets = ruleSets
 		};
 		// ChildValidatorAdaptor supports both sync and async execution.
-		Rule.AddAsyncValidator(adaptor, adaptor);
+		AddAsyncValidator(adaptor, adaptor);
 		return this;
 	}
 
@@ -77,7 +77,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 			RuleSets = ruleSets
 		};
 		// ChildValidatorAdaptor supports both sync and async execution.
-		Rule.AddAsyncValidator(adaptor, adaptor);
+		AddAsyncValidator(adaptor, adaptor);
 		return this;
 	}
 
@@ -87,8 +87,16 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 			RuleSets = ruleSets
 		};
 		// ChildValidatorAdaptor supports both sync and async execution.
-		Rule.AddAsyncValidator(adaptor, adaptor);
+		AddAsyncValidator(adaptor, adaptor);
 		return this;
+	}
+
+	protected virtual void AddValidator(IPropertyValidator<T, TProperty> validator) {
+		Rule.AddValidator(validator);
+	}
+
+	protected virtual void AddAsyncValidator(IAsyncPropertyValidator<T, TProperty> asyncValidator, IPropertyValidator<T, TProperty> fallback = null) {
+		Rule.AddAsyncValidator(asyncValidator, fallback);
 	}
 
 	IRuleBuilderOptions<T, TProperty> IRuleBuilderOptions<T, TProperty>.DependentRules(Action action) {
@@ -101,7 +109,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 		return this;
 	}
 
-	private void DependentRulesInternal(Action action) {
+	protected virtual void DependentRulesInternal(Action action) {
 		var dependencyContainer = new List<IValidationRule<T>>();
 		// Capture any rules added to the parent validator inside this delegate.
 		using (ParentValidator.Rules.Capture(dependencyContainer.Add)) {
@@ -119,7 +127,7 @@ internal class RuleBuilder<T, TProperty> : IRuleBuilderOptions<T, TProperty>, IR
 		Rule.AddDependentRules(dependencyContainer);
 	}
 
-	public void AddComponent(RuleComponent<T,TProperty> component) {
+	public virtual void AddComponent(RuleComponent<T,TProperty> component) {
 		if (Rule.Components is not ICollection<RuleComponent<T,TProperty>> collection) {
 			throw new InvalidOperationException("Cannot add a component to a rule that does not support components.");
 		}

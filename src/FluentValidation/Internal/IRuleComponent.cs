@@ -84,6 +84,16 @@ public interface IRuleComponent<T, out TProperty> : IRuleComponent {
 	Task<bool> InvokeAsyncCondition(ValidationContext<T> context, CancellationToken token = default);
 }
 
+public interface IRuleComponentInternal<T, TProperty> : IRuleComponent<T, TProperty> {
+	/// <summary>
+	/// Gets the property value for this rule. Note that this bypasses all conditions.
+	/// </summary>
+	/// <param name="innerContext"></param>
+	/// <param name="value"></param>
+	/// <returns></returns>
+	string GetErrorMessage(ValidationContext<T> innerContext, TProperty value);
+}
+
 /// <summary>
 /// An individual component within a rule with a validator attached.
 /// </summary>

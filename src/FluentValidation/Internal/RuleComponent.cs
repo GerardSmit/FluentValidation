@@ -30,7 +30,7 @@ using Validators;
 /// In a rule definition such as RuleFor(x => x.Name).NotNull().NotEqual("Foo")
 /// the NotNull and the NotEqual are both rule components.
 /// </summary>
-public partial class RuleComponent<T, TProperty> : IRuleComponent<T, TProperty> {
+public partial class RuleComponent<T, TProperty> : IRuleComponentInternal<T, TProperty> {
 	private string _errorMessage;
 	private Func<ValidationContext<T>, TProperty, string> _errorMessageFactory;
 	private Func<ValidationContext<T>, bool> _condition;

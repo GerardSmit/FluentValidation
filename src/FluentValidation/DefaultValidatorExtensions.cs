@@ -35,6 +35,36 @@ using Validators;
 /// </summary>
 public static partial class DefaultValidatorExtensions {
 	/// <summary>
+	/// Selects a new type from the current rule builder.
+	/// </summary>
+	/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+	/// <typeparam name="T">Type of object being validated</typeparam>
+	/// <typeparam name="TOld">Type of the old value</typeparam>
+	/// <typeparam name="TNew">Type of the new value</typeparam>
+	/// <param name="toNew">A function that converts the old value to the new value</param>
+	/// <param name="toOld">A function that converts the new value back to the old value, mainly used for error reporting</param>
+	/// <returns>A new rule builder for the new type</returns>
+	public static IRuleBuilder<T, TNew> Select<T, TOld, TNew>(this IRuleBuilder<T, TOld> ruleBuilder, Func<T, TOld, TNew> toNew, Func<T, TNew, TOld> toOld = null) {
+		if (ruleBuilder == null) throw new ArgumentNullException(nameof(ruleBuilder));
+		if (toNew == null) throw new ArgumentNullException(nameof(toNew));
+
+		var rule = new SelectValidationRule<T, TOld, TNew>(ruleBuilder.Rule, toNew, toOld);
+		return new RuleBuilder<T, TNew>(rule, ruleBuilder.ParentValidator);
+	}
+
+	public static IRuleBuilder<T, TProperty> Where<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder, Func<T, TProperty, bool> predicate) {
+		if (ruleBuilder == null) throw new ArgumentNullException(nameof(ruleBuilder));
+		if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+		var rule = new ConditionalValidationRule<T, TProperty>(ruleBuilder.Rule, predicate);
+		return new RuleBuilder<T, TProperty>(rule, ruleBuilder.ParentValidator);
+	}
+
+	public static IRuleBuilder<T, TProperty> Where<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder, Func<TProperty, bool> predicate) {
+		return Where(ruleBuilder, (_, property) => predicate(property));
+	}
+
+	/// <summary>
 	/// Associates a validator with this the property for this rule builder.
 	/// This overload handles type conversion for nullable value types, allowing a validator for TProperty to be applied to a property of type Nullable&lt;TProperty&gt;
 	/// </summary>
