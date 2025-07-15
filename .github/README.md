@@ -1,3 +1,43 @@
+# GerardSmit.FluentValidation
+
+This is a fork of the [FluentValidation](https://github.com/FluentValidation/FluentValidation) with changes that makes my life a little bit easier 🙂
+
+1. Added basic LINQ support (`Select`, `Where`) for `IRuleBuilder<T, TProperty>` to filter and transform validation rules without having to make a `When`-clause for every rule.
+  
+   For example, I use `Optional<T>` type in my API responses, and I wanted to validate the properties of the `Optional<T>` type without constantly checking if the value is present.  
+   Before:  
+   ```csharp
+   v.When(x => x.Name.HasValue, () => v.RuleFor(x => x.Name.Value).NotEmpty());
+   ```
+
+    After with a extension method:
+    ```csharp
+    v.RuleForOptional(x => x.Name).NotEmpty();
+
+    // Extension
+    internal static class OptionalExtensions
+    {
+      public static IRuleBuilder<T, TProperty> RuleForOptional<T, TProperty>(
+        this AbstractValidator<T> validator,
+        Expression<Func<T, Optional<TProperty>>> expression
+      )
+      {
+        return validator.RuleFor(expression)
+          .Where(x => x.HasValue)
+          .Select(
+            (_, v) => v.Value,
+            (_, v) => new Optional<TProperty>(v)
+          );
+      }
+    }
+    ```
+
+2. Added non-generic interfaces, so I can get values I want without using reflection.
+
+Below is the original README from the FluentValidation project, which contains more information about the library.
+
+---
+
 <p>
 <img src="https://raw.githubusercontent.com/FluentValidation/FluentValidation/gh-pages/assets/images/logo/fluent-validation-logo.png" alt="FluentValidation" width="250px" />
 </p>
